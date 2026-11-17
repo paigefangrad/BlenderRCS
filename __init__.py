@@ -9,12 +9,14 @@ bl_info = {
 }
 
 from . import properties
-from . import operators
+from . import utils
+from . import add_menu
 from . import ui
 
 _MODULES = (
   properties,
-  operators,
+  utils,
+  add_menu,
   ui
 )
 

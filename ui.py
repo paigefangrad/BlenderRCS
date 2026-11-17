@@ -1,9 +1,12 @@
 import bpy
+
+from typing import Literal
+
 from bpy.types import Context
 
-class VIEW3D_PT_rcs_thruster(bpy.types.Panel):
-  bl_label = "RCS Thruster"
-  bl_idname = "VIEW3D_PT_rcs_thruster"
+class VIEW3D_PT_rcs_panel(bpy.types.Panel):
+  bl_label = "RCS Settings"
+  bl_idname = "VIEW3D_PT_rcs_settings"
 
   bl_space_type = 'VIEW_3D'
   bl_region_type = 'UI'
@@ -14,12 +17,23 @@ class VIEW3D_PT_rcs_thruster(bpy.types.Panel):
     obj = context.object
 
     return (
-      obj is not None
-      and obj.rcs_thruster.is_thruster
+      obj is not None and (
+        (hasattr(obj, "rcs_thruster") and obj.rcs_thruster.is_thruster)
+        or
+        (hasattr(obj, "spacecraft") and obj.spacecraft.is_spacecraft)
+      )
     )
 
 
   def draw(self, context: Context) -> None:
+    obj = context.object
+    if obj.rcs_thruster.is_thruster is True:
+      self.draw_rcs_ui(context)
+    elif obj.spacecraft.is_spacecraft is True:
+      self.draw_spacecraft_ui(context)
+
+
+  def draw_rcs_ui(self, context: Context) -> None: 
     layout: bpy.types.UILayout | None
     layout = self.layout
     obj = context.object
@@ -31,7 +45,7 @@ class VIEW3D_PT_rcs_thruster(bpy.types.Panel):
 
     layout.label(
       text=obj.name,
-      icon='EMPTY_AXIS'
+      icon='CON_CAMERASOLVER'
     )
 
     layout.prop(props, "enabled")
@@ -44,15 +58,36 @@ class VIEW3D_PT_rcs_thruster(bpy.types.Panel):
         text=f"Spacecraft: {obj.parent.name}",
         icon='OBJECT_DATA'
       )
+      layout.operator(
+        text="select spaceship",
+        operator='rcs.select_parent',
+        icon='ACTION'
+      )
     else:
       layout.label(
         text="No spacecraft parent",
         icon='ERROR'
       )
 
+  def draw_spacecraft_ui(self, context: Context) -> None:
+    layout: bpy.types.UILayout | None
+    layout = self.layout
+    obj = context.object
+    props = obj.spacecraft
+
+    if layout is None or obj is None: 
+      return
+
+    layout.label(
+      text=obj.name,
+      icon='RESTRICT_SELECT_OFF'
+    )
+
+    layout.prop(props, "mass")
+
 
 _CLASSES = (
-  VIEW3D_PT_rcs_thruster,
+  VIEW3D_PT_rcs_panel,
 )
 
 def register():
