@@ -5,6 +5,9 @@ from typing import Literal
 from mathutils import Vector
 from .models import ThrusterData, CenterOfMassData, SpacecraftData
 from .allocation import build_allocation_matrix
+from .solver import solve_allocation
+from .sampling import sample_motion
+from .dynamics import calculate_required_wrench
 
 from bpy.types import Context, Operator, Object
 
@@ -29,25 +32,28 @@ class RCS_OT_check_ship(Operator):
       self.report({'ERROR'}, str(error))
       return {'CANCELLED'}
 
+    sample = sample_motion(
+      context.object,
+      context.scene,
+      context.scene.frame_current,
+      config.center_of_mass.position,
+    )
 
-    # print("\n========== RCS ALLOCATION MATRIX ==========")
-    # print(f"Spacecraft: {context.object.name}")
-    # print(f"Mass: {config.mass_kg:.2f} kg")
-    # print(f"Thrusters: {len(allocation.thruster_ids)}")
+    # print("\n========== MOTION SAMPLE ==========")
+    # print(f"Frame: {sample.frame}")
+    # print(f"CoM world: {sample.center_of_mass_world}")
+    # print(f"Linear acceleration: {sample.linear_acceleration}")
+    # print(f"Angular velocity: {sample.angular_velocity}")
+    # print(f"Angular acceleration: {sample.angular_acceleration}")
+    # print("===================================\n")
 
-    # for thruster_id, column in zip(
-    #     allocation.thruster_ids,
-    #     allocation.columns,
-    # ):
-    #     fx, fy, fz, tx, ty, tz = column
+    dynamics = calculate_required_wrench(config, sample)
 
-    #     print(f"\nThruster: {thruster_id}")
-    #     print(f"  Force:  ({fx:10.3f}, {fy:10.3f}, {fz:10.3f}) N")
-    #     print(f"  Torque: ({tx:10.3f}, {ty:10.3f}, {tz:10.3f}) Nm")
-
-    # print("\n===========================================\n")
-
-    self.report({'INFO'}, "Allocation matrix printed to console")
+    print("\n========== REQUIRED WRENCH ==========")
+    print(f"Required force:  {dynamics.required_force}")
+    print(f"Required torque: {dynamics.required_torque}")
+    print(f"Desired wrench:  {dynamics.desired_wrench}")
+    print("=====================================\n")
 
     return {'FINISHED'}
 
