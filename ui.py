@@ -1,6 +1,7 @@
 import bpy
 
 from typing import Literal
+from . import thrusters
 
 from bpy.types import Context
 
@@ -53,6 +54,10 @@ class VIEW3D_PT_rcs_panel(bpy.types.Panel):
 
     layout.separator()
 
+    layout.label(text=obj.rcs_thruster.stable_id)
+
+    layout.separator()
+
     if obj.parent:
       layout.label(
         text=f"Spacecraft: {obj.parent.name}",
@@ -83,7 +88,21 @@ class VIEW3D_PT_rcs_panel(bpy.types.Panel):
       icon='RESTRICT_SELECT_OFF'
     )
 
-    layout.prop(props, "mass")
+    layout.prop(props, "mass_kg")
+    inertia_header, inertia_panel = layout.panel("inertia_moments", default_closed=True)
+    inertia_header.label(text="inertia moments")
+
+    if inertia_panel is not None:
+      inertia_panel.prop(props, "inertia_x")
+      inertia_panel.prop(props, "inertia_y")
+      inertia_panel.prop(props, "inertia_z")
+
+    layout.separator()
+
+    layout.operator(
+      thrusters.RCS_OT_check_ship.bl_idname,
+      text="check ship"
+    )
 
 
 _CLASSES = (

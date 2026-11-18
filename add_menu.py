@@ -75,8 +75,11 @@ class OBJECT_OT_add_spacecraft(bpy.types.Operator):
     props = cast(properties.SpacecraftProperties, spacecraft.spacecraft)  # type: ignore[attr-defined]
 
     props.is_spacecraft = True
-    # props.mass = 
-    # props.stable_id = str(uuid.uuid4())
+    props.mass_kg = 100.0
+    props.inertia_x = 1000.0
+    props.inertia_y = 1000.0
+    props.inertia_z = 1000.0
+    props.stable_id = str(uuid.uuid4())
 
     bpy.ops.object.select_all(action='DESELECT')
 
@@ -218,8 +221,8 @@ class OBJECT_OT_add_com(bpy.types.Operator):
     props = cast(properties.COMProperties, com.com)  # type: ignore[attr-defined]
     # props = thruster.rcs_thruster
 
-    props.is_CoM = True
-    # props.stable_id = str(uuid.uuid4())
+    props.is_com = True
+    props.stable_id = str(uuid.uuid4())
 
     bpy.ops.object.select_all(action='DESELECT')
 

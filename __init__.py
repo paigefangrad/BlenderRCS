@@ -10,14 +10,18 @@ bl_info = {
 
 from . import properties
 from . import utils
+from . import thrusters
 from . import add_menu
 from . import ui
+from . import allocation
 
 _MODULES = (
   properties,
   utils,
+  thrusters,
   add_menu,
-  ui
+  ui,
+  allocation,
 )
 
 def register():

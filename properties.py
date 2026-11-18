@@ -15,14 +15,45 @@ class SpacecraftProperties(bpy.types.PropertyGroup):
     options={'HIDDEN'},
   )
 
-  mass: FloatProperty(
-    name="mass",
+  stable_id: StringProperty(
+    name="Stable ID",
+    description="Internal ID independent of object name",
+    default="",
+    options={'HIDDEN'}
+  )
+
+  mass_kg: FloatProperty(
+    name="Mass kg",
     description="Mass of the craft in kg",
     default=100.0,
     min=0.1,
     soft_max=1000000.0,
     precision=2,
   )
+
+  inertia_x: FloatProperty(
+      name="Inertia X",
+      description="Moment of inertia around the spacecraft's local X axis (kg·m²)",
+      default=1000.0,
+      min=0.001,
+      precision=2,
+  )
+
+  inertia_y: FloatProperty(
+      name="Inertia Y",
+      description="Moment of inertia around the spacecraft's local Y axis (kg·m²)",
+      default=1000.0,
+      min=0.001,
+      precision=2,
+  )
+
+  inertia_z: FloatProperty(
+      name="Inertia Z",
+      description="Moment of inertia around the spacecraft's local Z axis (kg·m²)",
+      default=1000.0,
+      min=0.001,
+  )
+
 
 class RCSThrusterProperties(bpy.types.PropertyGroup):
   is_thruster: BoolProperty(
@@ -56,10 +87,17 @@ class RCSThrusterProperties(bpy.types.PropertyGroup):
 
 
 class COMProperties(bpy.types.PropertyGroup):
-  is_CoM: BoolProperty(
+  is_com: BoolProperty(
     name="is_CoM",
     description="is Center of Mass",
     default=False,
+    options={'HIDDEN'}
+  )
+
+  stable_id: StringProperty(
+    name="Stable ID",
+    description="Internal ID independent of object name",
+    default="",
     options={'HIDDEN'}
   )
 
